@@ -13,11 +13,13 @@ qt_add_executable(appScreenTimeAnalyticalTool
     usagetracker.h usagetracker.cpp
 )
 
+set_source_files_properties(AppStyle.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+
 qt_add_qml_module(appScreenTimeAnalyticalTool
     URI ScreenTimeAnalyticalTool
     QML_FILES
         Main.qml
-        Style.qml
+        AppStyle.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

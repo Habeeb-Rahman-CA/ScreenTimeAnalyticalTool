@@ -3,11 +3,12 @@ import QtQuick
 pragma Singleton
 
 QtObject {
+    Component.onCompleted: console.log("Style singleton initialized")
     // Primary Colors
     readonly property color backgroundColor: "#0F0F12"
     readonly property color surfaceColor: "#1A1A1E"
-    readonly property color glassColor: "rgba(255, 255, 255, 0.05)"
-    readonly property color glassBorder: "rgba(255, 255, 255, 0.1)"
+    readonly property color glassColor: "#0DFFFFFF" // opaque white at 5%
+    readonly property color glassBorder: "#1AFFFFFF" // opaque white at 10%
     
     // Accents
     readonly property color accentPurple: "#8A2BE2"

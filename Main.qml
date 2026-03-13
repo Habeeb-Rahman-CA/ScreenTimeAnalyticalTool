@@ -9,7 +9,16 @@ Window {
     height: 750
     visible: true
     title: qsTr("Screen Time Analytical Tool")
-    color: Style.backgroundColor
+    color: (AppStyle && AppStyle.backgroundColor) ? AppStyle.backgroundColor : "#111111"
+    
+    Component.onCompleted: {
+        console.log("Root Window Completed")
+        if (typeof AppStyle !== "undefined") {
+            console.log("AppStyle found:", AppStyle.backgroundColor)
+        } else {
+            console.warn("AppStyle NOT FOUND")
+        }
+    }
 
     // Background Gradient Glows
     Rectangle {
@@ -17,7 +26,7 @@ Window {
         width: 600; height: 600
         radius: 300
         x: -100; y: -100
-        color: Style.accentPurple
+        color: AppStyle.accentPurple
         opacity: 0.15
         layer.enabled: true
         layer.effect: MultiEffect {
@@ -32,7 +41,7 @@ Window {
         width: 500; height: 500
         radius: 250
         x: root.width - 300; y: root.height - 300
-        color: Style.accentBlue
+        color: AppStyle.accentBlue
         opacity: 0.1
         layer.enabled: true
         layer.effect: MultiEffect {
@@ -48,21 +57,21 @@ Window {
         // Sidebar
         Rectangle {
             id: sidebar
-            width: Style.sidebarWidth
+            width: AppStyle.sidebarWidth
             height: parent.height
-            color: Style.glassColor
-            border.color: Style.glassBorder
+            color: AppStyle.glassColor
+            border.color: AppStyle.glassBorder
             border.width: 1
 
             Column {
                 anchors.fill: parent
-                anchors.margins: Style.paddingLarge
+                anchors.margins: AppStyle.paddingLarge
                 spacing: 32
 
                 // Logo/Title
                 Text {
                     text: "S C R E E N"
-                    color: Style.textPrimary
+                    color: AppStyle.textPrimary
                     font.pixelSize: 22
                     font.weight: Font.Bold
                     font.letterSpacing: 2
@@ -89,7 +98,7 @@ Window {
 
             Column {
                 anchors.fill: parent
-                anchors.margins: Style.paddingLarge
+                anchors.margins: AppStyle.paddingLarge
                 spacing: 24
 
                 // Header
@@ -101,13 +110,13 @@ Window {
                         spacing: 4
                         Text {
                             text: "Dashboard Overview"
-                            color: Style.textPrimary
+                            color: AppStyle.textPrimary
                             font.pixelSize: 28
                             font.weight: Font.DemiBold
                         }
                         Text {
                             text: "Tracking your digital well-being today"
-                            color: Style.textSecondary
+                            color: AppStyle.textSecondary
                             font.pixelSize: 14
                         }
                     }
@@ -130,7 +139,7 @@ Window {
                         }
                         cardSubValue: "Tracking active window"
                         cardIcon: "⏱️"
-                        cardAccent: Style.accentPurple
+                        cardAccent: AppStyle.accentPurple
                         width: (parent.width - 40) / 3
                     }
 
@@ -139,7 +148,7 @@ Window {
                         cardValue: usageTracker.activeApp
                         cardSubValue: usageTracker.activeTitle.substring(0, 30) + (usageTracker.activeTitle.length > 30 ? "..." : "")
                         cardIcon: "💻"
-                        cardAccent: Style.accentBlue
+                        cardAccent: AppStyle.accentBlue
                         width: (parent.width - 40) / 3
                     }
 
@@ -163,14 +172,14 @@ Window {
                     Rectangle {
                         width: (parent.width - 20) * 0.65
                         height: parent.height
-                        radius: Style.cardRadius
-                        color: Style.glassColor
-                        border.color: Style.glassBorder
+                        radius: AppStyle.cardRadius
+                        color: AppStyle.glassColor
+                        border.color: AppStyle.glassBorder
                         
                         Text {
                             anchors.centerIn: parent
                             text: "Usage Analytics Chart Placeholder"
-                            color: Style.textDim
+                            color: AppStyle.textDim
                         }
                     }
 
@@ -178,9 +187,9 @@ Window {
                     Rectangle {
                         width: (parent.width - 20) * 0.35
                         height: parent.height
-                        radius: Style.cardRadius
-                        color: Style.glassColor
-                        border.color: Style.glassBorder
+                        radius: AppStyle.cardRadius
+                        color: AppStyle.glassColor
+                        border.color: AppStyle.glassBorder
                         
                         Column {
                             anchors.fill: parent
@@ -189,7 +198,7 @@ Window {
                             
                             Text {
                                 text: "Top Applications"
-                                color: Style.textPrimary
+                                color: AppStyle.textPrimary
                                 font.pixelSize: 18
                                 font.weight: Font.Bold
                             }
@@ -230,7 +239,7 @@ Window {
             Text { text: navRoot.navIcon; font.pixelSize: 18 }
             Text {
                 text: navRoot.navText
-                color: navRoot.active ? Style.textPrimary : Style.textSecondary
+                color: navRoot.active ? AppStyle.textPrimary : AppStyle.textSecondary
                 font.pixelSize: 15
                 font.weight: navRoot.active ? Font.Medium : Font.Normal
             }
@@ -243,17 +252,17 @@ Window {
         property string cardValue: ""
         property string cardSubValue: ""
         property string cardIcon: ""
-        property color cardAccent: Style.accentPurple
+        property color cardAccent: AppStyle.accentPurple
         
         height: parent.height
-        radius: Style.cardRadius
-        color: Style.glassColor
-        border.color: Style.glassBorder
+        radius: AppStyle.cardRadius
+        color: AppStyle.glassColor
+        border.color: AppStyle.glassBorder
 
         Rectangle {
             width: 4; height: 40
             radius: 2
-            color: cardAccent
+            color: cardRoot.cardAccent
             anchors.left: cardRoot.left
             anchors.leftMargin: 16
             anchors.verticalCenter: cardRoot.verticalCenter
@@ -265,8 +274,8 @@ Window {
             anchors.leftMargin: 32
             spacing: 4
             
-            Text { text: cardRoot.cardTitle; color: Style.textSecondary; font.pixelSize: 13 }
-            Text { text: cardRoot.cardValue; color: Style.textPrimary; font.pixelSize: 32; font.weight: Font.Bold }
+            Text { text: cardRoot.cardTitle; color: AppStyle.textSecondary; font.pixelSize: 13 }
+            Text { text: cardRoot.cardValue; color: AppStyle.textPrimary; font.pixelSize: 32; font.weight: Font.Bold }
             Text { text: cardRoot.cardSubValue; color: cardRoot.cardAccent; font.pixelSize: 12 }
         }
         
@@ -295,11 +304,11 @@ Window {
         Column {
             anchors.verticalCenter: usageRoot.verticalCenter
             spacing: 2
-            Text { text: usageRoot.appName; color: Style.textPrimary; font.pixelSize: 14; font.weight: Font.Medium }
+            Text { text: usageRoot.appName; color: AppStyle.textPrimary; font.pixelSize: 14; font.weight: Font.Medium }
             Rectangle {
-                width: 150; height: 4; radius: 2; color: "rgba(255,255,255,0.1)"
+                width: 150; height: 4; radius: 2; color: "#1AFFFFFF"
                 Rectangle {
-                    width: parent.width * 0.6; height: 4; radius: 2; color: Style.accentBlue
+                    width: parent.width * 0.6; height: 4; radius: 2; color: AppStyle.accentBlue
                 }
             }
         }
@@ -309,7 +318,7 @@ Window {
         Text {
             anchors.verticalCenter: usageRoot.verticalCenter
             text: usageRoot.appTime
-            color: Style.textSecondary
+            color: AppStyle.textSecondary
             font.pixelSize: 12
         }
     }
