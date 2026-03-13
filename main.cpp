@@ -1,11 +1,16 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
+#include "usagetracker.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
+    UsageTracker tracker;
+
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("usageTracker", &tracker);
     QObject::connect(
         &engine,
         &QQmlApplicationEngine::objectCreationFailed,

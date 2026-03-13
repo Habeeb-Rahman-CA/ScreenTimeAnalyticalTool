@@ -1,0 +1,2 @@
+module ScreenTimeAnalyticalTool
+singleton Style Style.qml
