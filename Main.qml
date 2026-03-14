@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import QtQuick.Effects
 import Qt.labs.platform as Platform
+import QtCharts
 import ScreenTimeAnalyticalTool
 
 Window {
@@ -13,6 +14,8 @@ Window {
     title: qsTr("Screen Time Analytical Tool")
     color: (AppStyle && AppStyle.backgroundColor) ? AppStyle.backgroundColor : "#111111"
 
+    property string currentFilter: "Daily"
+
     Component.onCompleted: {
         console.log("Root Window Completed");
         if (typeof AppStyle !== "undefined") {
@@ -20,6 +23,7 @@ Window {
         } else {
             console.warn("AppStyle NOT FOUND");
         }
+        refreshData();
     }
 
     Platform.SystemTrayIcon {
@@ -120,7 +124,8 @@ Window {
                             spacing: 12
                             Image {
                                 source: "ic_search.svg"
-                                width: 16; height: 16
+                                width: 16
+                                height: 16
                                 opacity: 0.6
                                 anchors.verticalCenter: parent.verticalCenter
                                 fillMode: Image.PreserveAspectFit
@@ -146,7 +151,8 @@ Window {
                         color: AppStyle.surfaceColor
                         Image {
                             source: "ic_bell.svg"
-                            width: 20; height: 20
+                            width: 20
+                            height: 20
                             anchors.centerIn: parent
                             opacity: 0.8
                             fillMode: Image.PreserveAspectFit
@@ -159,7 +165,8 @@ Window {
                         color: AppStyle.surfaceColor
                         Image {
                             source: "ic_user.svg"
-                            width: 20; height: 20
+                            width: 20
+                            height: 20
                             anchors.centerIn: parent
                             opacity: 0.8
                             fillMode: Image.PreserveAspectFit
@@ -167,19 +174,62 @@ Window {
                     }
                 }
 
-                // Welcome Header
-                Column {
-                    spacing: 8
-                    Text {
-                        text: "Welcome back"
-                        color: AppStyle.textPrimary
-                        font.pixelSize: 28
-                        font.weight: Font.Bold
+                // Welcome Header & Filters
+                RowLayout {
+                    width: parent.width
+                    spacing: 20
+
+                    Column {
+                        spacing: 8
+                        Layout.fillWidth: true
+                        Text {
+                            text: "Welcome back"
+                            color: AppStyle.textPrimary
+                            font.pixelSize: 28
+                            font.weight: Font.Bold
+                        }
+                        Text {
+                            text: "Here's your productivity summary"
+                            color: AppStyle.textSecondary
+                            font.pixelSize: 15
+                        }
                     }
-                    Text {
-                        text: "Here's your productivity summary"
-                        color: AppStyle.textSecondary
-                        font.pixelSize: 15
+
+                    // Filters
+                    Rectangle {
+                        height: 40
+                        radius: 20
+                        color: AppStyle.surfaceColor
+                        Row {
+                            anchors.centerIn: parent
+                            spacing: 4
+                            padding: 4
+
+                            Repeater {
+                                model: ["Daily", "Weekly", "Monthly"]
+                                Rectangle {
+                                    width: 80
+                                    height: 32
+                                    radius: 16
+                                    color: root.currentFilter === modelData ? AppStyle.accentLime : "transparent"
+                                    Text {
+                                        text: modelData
+                                        anchors.centerIn: parent
+                                        color: root.currentFilter === modelData ? "#000000" : AppStyle.textSecondary
+                                        font.pixelSize: 13
+                                        font.weight: root.currentFilter === modelData ? Font.Bold : Font.Normal
+                                    }
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: {
+                                            root.currentFilter = modelData;
+                                            refreshData();
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        Layout.preferredWidth: 260
                     }
                 }
 
@@ -216,52 +266,117 @@ Window {
                 }
 
                 // Main Section Grid
-                Row {
+                RowLayout {
                     width: parent.width
                     height: contentArea.height - 350
                     spacing: 20
 
-                    // Dynamic Data Area
+                    // Left Column: Usage Trends Line Chart
                     Rectangle {
-                        width: parent.width
-                        height: parent.height
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
                         radius: AppStyle.cardRadius
                         color: AppStyle.surfaceColor
 
-                        Column {
+                        ColumnLayout {
                             anchors.fill: parent
-                            anchors.margins: 24
+                            anchors.margins: 20
+                            spacing: 12
+
+                            Text {
+                                text: root.currentFilter + " Usage Trends"
+                                color: AppStyle.textPrimary
+                                font.pixelSize: 18
+                                font.weight: Font.Bold
+                            }
+
+                            ChartView {
+                                id: trendChart
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                backgroundColor: "transparent"
+                                legend.visible: false
+                                antialiasing: true
+
+                                LineSeries {
+                                    id: trendSeries
+                                    name: "Screen Time"
+                                    color: AppStyle.accentLime
+                                    width: 3
+                                    
+                                    axisX: ValueAxis {
+                                        id: axisX
+                                        gridLineColor: "#1AFFFFFF"
+                                        labelsColor: AppStyle.textSecondary
+                                        labelFormat: "%.0f"
+                                    }
+                                    axisY: ValueAxis {
+                                        id: axisY
+                                        gridLineColor: "#1AFFFFFF"
+                                        labelsColor: AppStyle.textSecondary
+                                        labelFormat: "%.0f"
+                                        titleText: "Minutes"
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // Right Column: Top Applications
+                    Rectangle {
+                        Layout.preferredWidth: 350
+                        Layout.fillHeight: true
+                        radius: AppStyle.cardRadius
+                        color: AppStyle.surfaceColor
+
+                        ColumnLayout {
+                            anchors.fill: parent
+                            anchors.margins: 20
                             spacing: 16
 
                             Text {
+                                id: listTitle
                                 text: "Top Applications"
                                 color: AppStyle.textPrimary
                                 font.pixelSize: 18
                                 font.weight: Font.Bold
                             }
 
-                            Column {
-                                width: parent.width
+                            ListView {
+                                id: topAppsList
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 180
                                 spacing: 12
-                                    Repeater {
-                                        id: topAppsRepeater
-                                        model: []
-                                        delegate: AppUsageItem {
-                                            appName: modelData.name
-                                            appTime: {
-                                                let totalSeconds = modelData.time;
-                                                let hours = Math.floor(totalSeconds / 3600);
-                                                let minutes = Math.floor((totalSeconds % 3600) / 60);
-                                                let seconds = totalSeconds % 60;
-                                                if (hours > 0)
-                                                    return hours + "h " + minutes + "m";
-                                                if (minutes > 0)
-                                                    return minutes + "m " + seconds + "s";
-                                                return seconds + "s";
-                                            }
-                                            appIcon: "ic_apps.svg"
-                                        }
+                                model: ListModel { id: topAppsModel }
+                                delegate: AppUsageItem {
+                                    width: topAppsList.width
+                                    appName: name
+                                    appTime: {
+                                        let hours = Math.floor(time / 3600);
+                                        let minutes = Math.floor((time % 3600) / 60);
+                                        let seconds = time % 60;
+                                        if (hours > 0) return hours + "h " + minutes + "m";
+                                        if (minutes > 0) return minutes + "m " + seconds + "s";
+                                        return seconds + "s";
                                     }
+                                    appIcon: "ic_apps.svg"
+                                }
+                                clip: true
+                            }
+
+                            Item { Layout.fillHeight: true }
+
+                            ChartView {
+                                id: distChart
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 150
+                                backgroundColor: "transparent"
+                                legend.visible: false
+                                antialiasing: true
+
+                                PieSeries {
+                                    id: pieSeries
+                                    holeSize: 0.5
                                 }
                             }
                         }
@@ -269,24 +384,46 @@ Window {
                 }
             }
         }
+    }
+
+    function refreshData() {
+        if (!dbManager) return;
+        
+        // 1. Refresh Top Apps and Pie Chart from DB
+        let topApps = dbManager.getUiTopApps(currentFilter, 6);
+        topAppsModel.clear();
+        pieSeries.clear();
+        for (let i = 0; i < topApps.length; i++) {
+            topAppsModel.append(topApps[i]);
+            pieSeries.append(topApps[i].name, topApps[i].time);
+        }
+
+        // 2. Refresh Trends from DB
+        let trends = dbManager.getUiTrends(currentFilter);
+        trendSeries.clear();
+        let maxVal = 0;
+        for (let i = 0; i < trends.length; i++) {
+            let val = trends[i].total_time / 60; // In minutes
+            trendSeries.append(i, val);
+            if (val > maxVal) maxVal = val;
+        }
+        axisX.max = trends.length > 1 ? trends.length - 1 : 7;
+        axisY.max = maxVal > 0 ? maxVal * 1.2 : 60;
+    }
+
+
 
     Connections {
         target: usageTracker
         function onAppUsageChanged() {
-            let usageObj = usageTracker.appUsage;
-            let appsArray = [];
-            for (let app in usageObj) {
-                if (usageObj.hasOwnProperty(app)) {
-                    appsArray.push({
-                        name: app,
-                        time: usageObj[app]
-                    });
-                }
+            // Live Update: we could refreshData() here, but it might be too frequent.
+            // Let's just update the current active session or refresh every minute.
+        }
+        function onTotalScreenTimeChanged() {
+            // Periodically refresh the list and chart to show live progress
+            if (usageTracker.totalScreenTime % 30 === 0) {
+                refreshData();
             }
-            appsArray.sort(function (a, b) {
-                return b.time - a.time;
-            });
-            topAppsRepeater.model = appsArray.slice(0, 5);
         }
     }
 
@@ -352,7 +489,7 @@ Window {
             anchors.margins: 24
             spacing: 12
 
-            Row {
+            RowLayout {
                 width: parent.width
                 Text {
                     text: cardRoot.cardTitle

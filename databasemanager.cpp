@@ -189,3 +189,62 @@ QVariantList DatabaseManager::getMonthlySummary(int year, int month)
     }
     return list;
 }
+QVariantList DatabaseManager::getDailyTrends(int daysBack)
+{
+    QVariantList list;
+    QSqlQuery query(m_db);
+    // Get total duration per day for the last N days
+    query.prepare("SELECT date_str, SUM(total_duration) as total "
+                  "FROM daily_summaries "
+                  "WHERE date_str >= date('now', :modifier) "
+                  "GROUP BY date_str "
+                  "ORDER BY date_str ASC");
+    QString modifier = QString("-%1 days").arg(daysBack);
+    query.bindValue(":modifier", modifier);
+    
+    if (query.exec()) {
+        while (query.next()) {
+            QVariantMap map;
+            map["date"] = query.value(0).toString();
+            map["total_time"] = query.value(1).toInt();
+            list.append(map);
+        }
+    } else {
+        qDebug() << "Failed to fetch daily trends:" << query.lastError();
+    }
+    return list;
+}
+
+QVariantList DatabaseManager::getUiTopApps(const QString &filter, int limit)
+{
+    QDateTime now = QDateTime::currentDateTime();
+    QVariantList list;
+    if (filter == "Daily") {
+        QString dateStr = now.toString("yyyy-MM-dd");
+        list = getDailySummary(dateStr);
+    } else if (filter == "Weekly") {
+        list = getWeeklySummary(now.date().year(), now.date().weekNumber());
+    } else if (filter == "Monthly") {
+        list = getMonthlySummary(now.date().year(), now.date().month());
+    }
+    
+    // Slice manually if list is longer than limit
+    while (list.size() > limit) {
+        list.removeLast();
+    }
+    return list;
+}
+
+QVariantList DatabaseManager::getUiTrends(const QString &filter)
+{
+    // For simplicity, regardless of filter we currently return daily trends covering 7 days
+    if (filter == "Daily") {
+        return getDailyTrends(7);
+    } else if (filter == "Weekly") {
+        // Just return 14 days for week focus
+        return getDailyTrends(14);
+    } else {
+        // Return 30 days for month focus
+        return getDailyTrends(30);
+    }
+}

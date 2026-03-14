@@ -20,6 +20,10 @@ public:
     Q_INVOKABLE QVariantList getDailySummary(const QString &dateStr);
     Q_INVOKABLE QVariantList getWeeklySummary(int year, int week);
     Q_INVOKABLE QVariantList getMonthlySummary(int year, int month);
+    Q_INVOKABLE QVariantList getDailyTrends(int daysBack);
+    
+    Q_INVOKABLE QVariantList getUiTopApps(const QString &filter, int limit = 5);
+    Q_INVOKABLE QVariantList getUiTrends(const QString &filter);
 
 private:
     QSqlDatabase m_db;

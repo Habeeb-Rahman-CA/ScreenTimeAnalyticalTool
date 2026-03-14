@@ -4,7 +4,7 @@ project(ScreenTimeAnalyticalTool VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick QuickEffects Sql)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickEffects Sql Charts Widgets)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
@@ -45,7 +45,7 @@ set_target_properties(appScreenTimeAnalyticalTool PROPERTIES
 )
 
 target_link_libraries(appScreenTimeAnalyticalTool
-    PRIVATE Qt6::Quick Qt6::QuickEffects Qt6::Sql Psapi
+    PRIVATE Qt6::Quick Qt6::QuickEffects Qt6::Sql Qt6::Charts Qt6::Widgets Psapi
 )
 
 include(GNUInstallDirs)
