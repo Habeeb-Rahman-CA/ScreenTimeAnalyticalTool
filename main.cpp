@@ -1,15 +1,22 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include "databasemanager.h"
 #include "usagetracker.h"
 
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    UsageTracker tracker;
+    DatabaseManager dbManager;
+    if (!dbManager.initializeDatabase()) {
+        qWarning() << "Failed to initialize database!";
+    }
+
+    UsageTracker tracker(&dbManager);
 
     QQmlApplicationEngine engine;
+    engine.rootContext()->setContextProperty("dbManager", &dbManager);
     engine.rootContext()->setContextProperty("usageTracker", &tracker);
     QObject::connect(
         &engine,

@@ -4,17 +4,24 @@
 #include <QDebug>
 #include <QFileInfo>
 
-UsageTracker::UsageTracker(QObject *parent)
+UsageTracker::UsageTracker(DatabaseManager* db, QObject *parent)
     : QObject(parent)
     , m_activeApp("None")
     , m_activeTitle("")
     , m_totalScreenTime(0)
     , m_isUserIdle(false)
     , m_idleThreshold(60000) // 60 seconds
+    , m_dbManager(db)
+    , m_currentAppDuration(0)
 {
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &UsageTracker::updateTracking);
     m_timer->start(1000); // Update every second
+}
+
+DatabaseManager* UsageTracker::dbManager() const
+{
+    return m_dbManager;
 }
 
 QString UsageTracker::activeApp() const
@@ -80,6 +87,10 @@ void UsageTracker::updateTracking()
     }
 
     if (currentApp != m_activeApp) {
+        if (m_currentAppDuration > 0 && m_dbManager) {
+            m_dbManager->logAppUsage(m_activeApp, m_currentAppDuration);
+            m_currentAppDuration = 0;
+        }
         m_activeApp = currentApp;
         emit activeAppChanged();
     }
@@ -91,6 +102,13 @@ void UsageTracker::updateTracking()
 
     if (!currentlyIdle) {
         m_totalScreenTime++;
+        m_currentAppDuration++;
+        
+        if (m_currentAppDuration >= 60 && m_dbManager) {
+            m_dbManager->logAppUsage(m_activeApp, m_currentAppDuration);
+            m_currentAppDuration = 0;
+        }
+        
         emit totalScreenTimeChanged();
         
         m_appUsage[m_activeApp]++;

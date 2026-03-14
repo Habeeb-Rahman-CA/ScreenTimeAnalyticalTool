@@ -12,13 +12,13 @@ Window {
     visible: true
     title: qsTr("Screen Time Analytical Tool")
     color: (AppStyle && AppStyle.backgroundColor) ? AppStyle.backgroundColor : "#111111"
-    
+
     Component.onCompleted: {
-        console.log("Root Window Completed")
+        console.log("Root Window Completed");
         if (typeof AppStyle !== "undefined") {
-            console.log("AppStyle found:", AppStyle.backgroundColor)
+            console.log("AppStyle found:", AppStyle.backgroundColor);
         } else {
-            console.warn("AppStyle NOT FOUND")
+            console.warn("AppStyle NOT FOUND");
         }
     }
 
@@ -42,7 +42,7 @@ Window {
             width: AppStyle.sidebarWidth
             height: parent.height
             color: AppStyle.backgroundColor
-            
+
             Column {
                 anchors.fill: parent
                 anchors.margins: AppStyle.paddingLarge
@@ -50,30 +50,44 @@ Window {
 
                 // Logo/Title
                 Row {
-                    spacing: 12
-                    Rectangle {
-                        width: 28; height: 28
-                        radius: 6; color: AppStyle.accentLime
-                        Text { text: "✦"; anchors.centerIn: parent; color: "black"; font.pixelSize: 18 }
-                    }
                     Text {
-                        text: "Prodly"
+                        text: "Deliro"
                         color: AppStyle.textPrimary
-                        font.pixelSize: 22; font.weight: Font.Bold
+                        font.pixelSize: 22
+                        font.weight: Font.Bold
                     }
                 }
 
-                Text { text: "Navigation"; color: AppStyle.textDim; font.pixelSize: 12; font.weight: Font.Bold; font.letterSpacing: 1 }
+                Text {
+                    text: "Navigation"
+                    color: AppStyle.textDim
+                    font.pixelSize: 12
+                    font.weight: Font.Bold
+                    font.letterSpacing: 1
+                }
 
                 // Nav Items
                 Column {
                     width: parent.width
                     spacing: 8
 
-                    NavItem { navText: "Dashboard"; active: true; navIcon: "ic_dashboard.svg" }
-                    NavItem { navText: "Schedule"; navIcon: "ic_time.svg" }
-                    NavItem { navText: "Reports & Analytics"; navIcon: "ic_history.svg" }
-                    NavItem { navText: "Settings"; navIcon: "ic_settings.svg" }
+                    NavItem {
+                        navText: "Dashboard"
+                        active: true
+                        navIcon: "ic_dashboard.svg"
+                    }
+                    NavItem {
+                        navText: "Schedule"
+                        navIcon: "ic_time.svg"
+                    }
+                    NavItem {
+                        navText: "Reports & Analytics"
+                        navIcon: "ic_history.svg"
+                    }
+                    NavItem {
+                        navText: "Settings"
+                        navIcon: "ic_settings.svg"
+                    }
                 }
             }
         }
@@ -94,37 +108,78 @@ Window {
                     width: parent.width
                     height: 50
                     spacing: 20
-                    
+
                     Rectangle {
-                        width: 400; height: 44
-                        radius: 22; color: AppStyle.surfaceColor
+                        width: 400
+                        height: 44
+                        radius: 22
+                        color: AppStyle.surfaceColor
                         Row {
-                            anchors.fill: parent; anchors.leftMargin: 16; spacing: 12
-                            Text { text: "🔍"; color: AppStyle.textDim; anchors.verticalCenter: parent.verticalCenter }
-                            TextInput { 
-                                text: "Search here"; color: AppStyle.textDim; font.pixelSize: 14
-                                anchors.verticalCenter: parent.verticalCenter; width: parent.width - 60
+                            anchors.fill: parent
+                            anchors.leftMargin: 16
+                            spacing: 12
+                            Image {
+                                source: "ic_search.svg"
+                                width: 16; height: 16
+                                opacity: 0.6
+                                anchors.verticalCenter: parent.verticalCenter
+                                fillMode: Image.PreserveAspectFit
+                            }
+                            TextInput {
+                                text: "Search here"
+                                color: AppStyle.textDim
+                                font.pixelSize: 14
+                                anchors.verticalCenter: parent.verticalCenter
+                                width: parent.width - 60
                             }
                         }
                     }
-                    
-                    Item { Layout.fillWidth: true } // Spacer
-                    
-                    Rectangle { width: 44; height: 44; radius: 22; color: AppStyle.surfaceColor; Text { text: "🔔"; anchors.centerIn: parent } }
-                    Rectangle { width: 44; height: 44; radius: 22; color: AppStyle.surfaceColor; Text { text: "👤"; anchors.centerIn: parent } }
+
+                    Item {
+                        Layout.fillWidth: true
+                    } // Spacer
+
+                    Rectangle {
+                        width: 44
+                        height: 44
+                        radius: 22
+                        color: AppStyle.surfaceColor
+                        Image {
+                            source: "ic_bell.svg"
+                            width: 20; height: 20
+                            anchors.centerIn: parent
+                            opacity: 0.8
+                            fillMode: Image.PreserveAspectFit
+                        }
+                    }
+                    Rectangle {
+                        width: 44
+                        height: 44
+                        radius: 22
+                        color: AppStyle.surfaceColor
+                        Image {
+                            source: "ic_user.svg"
+                            width: 20; height: 20
+                            anchors.centerIn: parent
+                            opacity: 0.8
+                            fillMode: Image.PreserveAspectFit
+                        }
+                    }
                 }
 
                 // Welcome Header
                 Column {
                     spacing: 8
                     Text {
-                        text: "Welcome back Jhon! 👋"
+                        text: "Welcome back"
                         color: AppStyle.textPrimary
-                        font.pixelSize: 28; font.weight: Font.Bold
+                        font.pixelSize: 28
+                        font.weight: Font.Bold
                     }
                     Text {
-                        text: "Here's your productivity summary & AI assistance"
-                        color: AppStyle.textSecondary; font.pixelSize: 15
+                        text: "Here's your productivity summary"
+                        color: AppStyle.textSecondary
+                        font.pixelSize: 15
                     }
                 }
 
@@ -137,16 +192,16 @@ Window {
                     StatCard {
                         cardTitle: "Total Screen Time"
                         cardValue: {
-                            let totalSeconds = usageTracker.totalScreenTime
-                            let hours = Math.floor(totalSeconds / 3600)
-                            let minutes = Math.floor((totalSeconds % 3600) / 60)
-                            let seconds = totalSeconds % 60
-                            return hours + "h " + minutes + "m " + seconds + "s"
+                            let totalSeconds = usageTracker.totalScreenTime;
+                            let hours = Math.floor(totalSeconds / 3600);
+                            let minutes = Math.floor((totalSeconds % 3600) / 60);
+                            let seconds = totalSeconds % 60;
+                            return hours + "h " + minutes + "m " + seconds + "s";
                         }
                         cardSubValue: "Tracking active window"
                         cardIcon: "ic_time.svg"
                         cardAccent: AppStyle.accentLime
-                        width: (parent.width - 60) / 4
+                        width: (parent.width - 20) / 2
                         showProgress: true
                     }
 
@@ -156,25 +211,7 @@ Window {
                         cardSubValue: usageTracker.activeTitle
                         cardIcon: "ic_apps.svg"
                         cardAccent: AppStyle.accentLime
-                        width: (parent.width - 60) / 4
-                    }
-
-                    StatCard {
-                        cardTitle: "Focus Score"
-                        cardValue: "82"
-                        cardSubValue: "Great progress!"
-                        cardIcon: "ic_target.svg"
-                        cardAccent: AppStyle.accentLime
-                        width: (parent.width - 60) / 4
-                    }
-
-                    StatCard {
-                        cardTitle: "Distractions"
-                        cardValue: "628"
-                        cardSubValue: "Most common: Phone"
-                        cardIcon: "ic_apps.svg"
-                        cardAccent: AppStyle.accentOrange
-                        width: (parent.width - 60) / 4
+                        width: (parent.width - 20) / 2
                     }
                 }
 
@@ -184,51 +221,20 @@ Window {
                     height: contentArea.height - 350
                     spacing: 20
 
-                    // Left Column: Usage Chart Placeholder
+                    // Dynamic Data Area
                     Rectangle {
-                        width: (parent.width - 20) * 0.65
+                        width: parent.width
                         height: parent.height
                         radius: AppStyle.cardRadius
                         color: AppStyle.surfaceColor
-                        
-                        Column {
-                            anchors.fill: parent; anchors.margins: 24; spacing: 16
-                            Text { text: "Weekly Activity Overview"; color: AppStyle.textPrimary; font.pixelSize: 18; font.weight: Font.Bold }
-                            Text { text: "24.9h Total focus time this week"; color: AppStyle.textSecondary; font.pixelSize: 14 }
-                            
-                            Item { height: 20; width: 1 }
-                            
-                            Row {
-                                id: activityGraph
-                                property var barHeights: [60, 100, 140, 80, 180, 120, 90]
-                                anchors.horizontalCenter: parent.horizontalCenter
-                                spacing: 12
-                                Repeater {
-                                    model: 7
-                                    Rectangle {
-                                        width: 40; height: activityGraph.barHeights[index]
-                                        radius: 4; color: index % 2 == 0 ? AppStyle.accentLime : AppStyle.accentOrange
-                                        anchors.bottom: parent.bottom
-                                    }
-                                }
-                            }
-                        }
-                    }
 
-                    // Right Column: AI Insights Area
-                    Rectangle {
-                        width: (parent.width - 20) * 0.35
-                        height: parent.height
-                        radius: AppStyle.cardRadius
-                        color: AppStyle.surfaceColor
-                        
                         Column {
                             anchors.fill: parent
-                            anchors.margins: 20
+                            anchors.margins: 24
                             spacing: 16
-                            
+
                             Text {
-                                text: "AI Insights"
+                                text: "Top Applications"
                                 color: AppStyle.textPrimary
                                 font.pixelSize: 18
                                 font.weight: Font.Bold
@@ -237,35 +243,21 @@ Window {
                             Column {
                                 width: parent.width
                                 spacing: 12
-                                
-                                Rectangle {
-                                    width: parent.width; height: 100
-                                    radius: 12; color: "#0A0A0A"
-                                    Column {
-                                        anchors.fill: parent; anchors.margins: 12; spacing: 8
-                                        Text { text: "🎯 Best focus window"; color: AppStyle.accentLime; font.pixelSize: 13; font.weight: Font.Bold }
-                                        Text { text: "You're most productive before noon."; color: AppStyle.textSecondary; font.pixelSize: 12; width: parent.width; wrapMode: Text.WordWrap }
-                                    }
-                                }
-
-                                Text { text: "Top Applications"; color: AppStyle.textPrimary; font.pixelSize: 16; font.weight: Font.Bold }
-
-                                Column {
-                                    width: parent.width
-                                    spacing: 12
                                     Repeater {
                                         id: topAppsRepeater
                                         model: []
                                         delegate: AppUsageItem {
                                             appName: modelData.name
                                             appTime: {
-                                                let totalSeconds = modelData.time
-                                                let hours = Math.floor(totalSeconds / 3600)
-                                                let minutes = Math.floor((totalSeconds % 3600) / 60)
-                                                let seconds = totalSeconds % 60
-                                                if (hours > 0) return hours + "h " + minutes + "m"
-                                                if (minutes > 0) return minutes + "m " + seconds + "s"
-                                                return seconds + "s"
+                                                let totalSeconds = modelData.time;
+                                                let hours = Math.floor(totalSeconds / 3600);
+                                                let minutes = Math.floor((totalSeconds % 3600) / 60);
+                                                let seconds = totalSeconds % 60;
+                                                if (hours > 0)
+                                                    return hours + "h " + minutes + "m";
+                                                if (minutes > 0)
+                                                    return minutes + "m " + seconds + "s";
+                                                return seconds + "s";
                                             }
                                             appIcon: "ic_apps.svg"
                                         }
@@ -277,7 +269,6 @@ Window {
                 }
             }
         }
-    }
 
     Connections {
         target: usageTracker
@@ -286,44 +277,53 @@ Window {
             let appsArray = [];
             for (let app in usageObj) {
                 if (usageObj.hasOwnProperty(app)) {
-                    appsArray.push({ name: app, time: usageObj[app] });
+                    appsArray.push({
+                        name: app,
+                        time: usageObj[app]
+                    });
                 }
             }
-            appsArray.sort(function(a, b) { return b.time - a.time; });
+            appsArray.sort(function (a, b) {
+                return b.time - a.time;
+            });
             topAppsRepeater.model = appsArray.slice(0, 5);
         }
     }
 
     // --- Inner Component Templates ---
-    
+
     component NavItem: Rectangle {
         id: navRoot
         property string navText: ""
         property string navIcon: ""
         property bool active: false
-        
+
         width: parent.width
         height: 50
         radius: 12
         color: active ? "#1A1A1A" : "transparent"
-        
+
         Row {
             anchors.fill: parent
             anchors.leftMargin: 12
             spacing: 12
-            
+
             Rectangle {
-                width: 32; height: 32
-                radius: 16; color: navRoot.active ? AppStyle.accentLime : "transparent"
+                width: 32
+                height: 32
+                radius: 16
+                color: navRoot.active ? AppStyle.accentLime : "transparent"
                 anchors.verticalCenter: parent.verticalCenter
-                Image { 
+                Image {
                     source: navRoot.navIcon
-                    width: 16; height: 16; anchors.centerIn: parent
+                    width: 16
+                    height: 16
+                    anchors.centerIn: parent
                     fillMode: Image.PreserveAspectFit
                     opacity: navRoot.active ? 1.0 : 0.6
                 }
             }
-            
+
             Text {
                 text: navRoot.navText
                 color: navRoot.active ? AppStyle.textPrimary : AppStyle.textSecondary
@@ -342,7 +342,7 @@ Window {
         property string cardIcon: ""
         property color cardAccent: AppStyle.accentPurple
         property bool showProgress: false
-        
+
         height: parent.height
         radius: AppStyle.cardRadius
         color: AppStyle.surfaceColor
@@ -351,32 +351,56 @@ Window {
             anchors.fill: parent
             anchors.margins: 24
             spacing: 12
-            
+
             Row {
                 width: parent.width
-                Text { 
-                    text: cardRoot.cardTitle; color: AppStyle.textSecondary; font.pixelSize: 14; font.weight: Font.Medium
-                    Layout.fillWidth: true 
+                Text {
+                    text: cardRoot.cardTitle
+                    color: AppStyle.textSecondary
+                    font.pixelSize: 14
+                    font.weight: Font.Medium
+                    Layout.fillWidth: true
                 }
-                Image { source: cardRoot.cardIcon; width: 20; height: 20; opacity: 0.8; fillMode: Image.PreserveAspectFit }
+                Image {
+                    source: cardRoot.cardIcon
+                    width: 20
+                    height: 20
+                    opacity: 0.8
+                    fillMode: Image.PreserveAspectFit
+                }
             }
-            
-            Text { 
-                text: cardRoot.cardValue; color: AppStyle.textPrimary; font.pixelSize: 24; font.weight: Font.Bold 
-                width: parent.width; elide: Text.ElideRight; clip: true
+
+            Text {
+                text: cardRoot.cardValue
+                color: AppStyle.textPrimary
+                font.pixelSize: 24
+                font.weight: Font.Bold
+                width: parent.width
+                elide: Text.ElideRight
+                clip: true
             }
-            
+
             Rectangle {
                 visible: cardRoot.showProgress
-                width: parent.width; height: 8; radius: 4; color: "#0A0A0A"
+                width: parent.width
+                height: 8
+                radius: 4
+                color: "#0A0A0A"
                 Rectangle {
-                    width: parent.width * 0.6; height: 8; radius: 4; color: cardRoot.cardAccent
+                    width: parent.width * 0.6
+                    height: 8
+                    radius: 4
+                    color: cardRoot.cardAccent
                 }
             }
-            
-            Text { 
-                text: cardRoot.cardSubValue; color: AppStyle.textSecondary; font.pixelSize: 12 
-                width: parent.width; elide: Text.ElideRight; clip: true
+
+            Text {
+                text: cardRoot.cardSubValue
+                color: AppStyle.textSecondary
+                font.pixelSize: 12
+                width: parent.width
+                elide: Text.ElideRight
+                clip: true
             }
         }
     }
@@ -386,23 +410,24 @@ Window {
         property string appName: ""
         property string appTime: ""
         property string appIcon: ""
-        
+
         width: parent.width
         height: 40
         spacing: 12
-        
-        Image { 
+
+        Image {
             source: usageRoot.appIcon
-            width: 20; height: 20
+            width: 20
+            height: 20
             anchors.verticalCenter: usageRoot.verticalCenter
             opacity: 0.8
             fillMode: Image.PreserveAspectFit
         }
-        
+
         Column {
             anchors.verticalCenter: usageRoot.verticalCenter
             spacing: 2
-            Text { 
+            Text {
                 text: usageRoot.appName
                 color: AppStyle.textPrimary
                 font.pixelSize: 14
@@ -412,15 +437,24 @@ Window {
                 clip: true
             }
             Rectangle {
-                width: 150; height: 4; radius: 2; color: "#1AFFFFFF"
+                width: 150
+                height: 4
+                radius: 2
+                color: "#1AFFFFFF"
                 Rectangle {
-                    width: parent.width * 0.6; height: 4; radius: 2; color: AppStyle.accentBlue
+                    width: parent.width * 0.6
+                    height: 4
+                    radius: 2
+                    color: AppStyle.accentBlue
                 }
             }
         }
-        
-        Item { width: 10; height: 1 } // Spacer
-        
+
+        Item {
+            width: 10
+            height: 1
+        } // Spacer
+
         Text {
             anchors.verticalCenter: usageRoot.verticalCenter
             text: usageRoot.appTime

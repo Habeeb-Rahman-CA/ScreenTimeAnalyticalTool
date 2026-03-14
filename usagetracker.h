@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <QString>
 #include <QVariantMap>
+#include "databasemanager.h"
 
 class UsageTracker : public QObject
 {
@@ -15,9 +16,12 @@ class UsageTracker : public QObject
 
     Q_PROPERTY(QVariantMap appUsage READ appUsage NOTIFY appUsageChanged)
     Q_PROPERTY(bool isUserIdle READ isUserIdle NOTIFY isUserIdleChanged)
+    Q_PROPERTY(DatabaseManager* dbManager READ dbManager CONSTANT)
 
 public:
-    explicit UsageTracker(QObject *parent = nullptr);
+    explicit UsageTracker(DatabaseManager* db, QObject *parent = nullptr);
+    
+    DatabaseManager* dbManager() const;
 
     QString activeApp() const;
     QString activeTitle() const;
@@ -44,6 +48,9 @@ private:
     QMap<QString, long long> m_appUsage;
     bool m_isUserIdle;
     unsigned int m_idleThreshold;
+    
+    DatabaseManager* m_dbManager;
+    int m_currentAppDuration;
 
     QString getActiveProcessName();
     QString getActiveWindowTitle();

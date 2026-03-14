@@ -4,13 +4,14 @@ project(ScreenTimeAnalyticalTool VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick QuickEffects)
+find_package(Qt6 REQUIRED COMPONENTS Quick QuickEffects Sql)
 
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appScreenTimeAnalyticalTool
     main.cpp
     usagetracker.h usagetracker.cpp
+    databasemanager.h databasemanager.cpp
 )
 
 set_source_files_properties(AppStyle.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
@@ -27,6 +28,9 @@ qt_add_qml_module(appScreenTimeAnalyticalTool
         ic_history.svg
         ic_settings.svg
         ic_target.svg
+        ic_search.svg
+        ic_bell.svg
+        ic_user.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
@@ -41,7 +45,7 @@ set_target_properties(appScreenTimeAnalyticalTool PROPERTIES
 )
 
 target_link_libraries(appScreenTimeAnalyticalTool
-    PRIVATE Qt6::Quick Qt6::QuickEffects Psapi
+    PRIVATE Qt6::Quick Qt6::QuickEffects Qt6::Sql Psapi
 )
 
 include(GNUInstallDirs)
