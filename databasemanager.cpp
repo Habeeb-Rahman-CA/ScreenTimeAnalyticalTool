@@ -71,6 +71,83 @@ void DatabaseManager::createTables()
                "app_name TEXT, "
                "total_duration INTEGER, "
                "UNIQUE(year, month, app_name))");
+
+    query.exec("CREATE TABLE IF NOT EXISTS app_limits ("
+               "target TEXT PRIMARY KEY, "
+               "limit_seconds INTEGER, "
+               "limit_type TEXT, "
+               "is_website INTEGER DEFAULT 0, "
+               "enabled INTEGER DEFAULT 1)");
+}
+
+void DatabaseManager::setAppLimit(const QString &target, int limitSeconds, const QString &limitType, bool isWebsite)
+{
+    QSqlQuery query(m_db);
+    query.prepare("INSERT INTO app_limits (target, limit_seconds, limit_type, is_website) "
+                  "VALUES (:target, :limit, :type, :is_website) "
+                  "ON CONFLICT(target) DO UPDATE SET "
+                  "limit_seconds = :limit, limit_type = :type, is_website = :is_website");
+    query.bindValue(":target", target);
+    query.bindValue(":limit", limitSeconds);
+    query.bindValue(":type", limitType);
+    query.bindValue(":is_website", isWebsite ? 1 : 0);
+    query.exec();
+}
+
+void DatabaseManager::removeAppLimit(const QString &target)
+{
+    QSqlQuery query(m_db);
+    query.prepare("DELETE FROM app_limits WHERE target = :target");
+    query.bindValue(":target", target);
+    query.exec();
+}
+
+QVariantList DatabaseManager::getAppLimits()
+{
+    QVariantList list;
+    QSqlQuery query(m_db);
+    query.prepare("SELECT target, limit_seconds, limit_type, is_website, enabled FROM app_limits");
+    if (query.exec()) {
+        while (query.next()) {
+            QVariantMap map;
+            map["target"] = query.value(0).toString();
+            map["limit"] = query.value(1).toInt();
+            map["type"] = query.value(2).toString();
+            map["isWebsite"] = query.value(3).toBool();
+            map["enabled"] = query.value(4).toBool();
+            list.append(map);
+        }
+    }
+    return list;
+}
+
+bool DatabaseManager::checkLimit(const QString &target, int currentUsageSeconds, const QString &limitType)
+{
+    QSqlQuery query(m_db);
+    query.prepare("SELECT limit_seconds FROM app_limits WHERE target = :target AND limit_type = :type AND enabled = 1");
+    query.bindValue(":target", target);
+    query.bindValue(":type", limitType);
+    
+    if (query.exec() && query.next()) {
+        int limit = query.value(0).toInt();
+        
+        if (limitType == "Daily" || limitType == "Session") {
+            return currentUsageSeconds >= limit;
+        } else if (limitType == "Weekly") {
+            // Get weekly total
+            QDate date = QDate::currentDate();
+            QSqlQuery weeklyQuery(m_db);
+            weeklyQuery.prepare("SELECT SUM(total_duration) FROM weekly_summaries WHERE year = :year AND week = :week AND app_name = :app");
+            weeklyQuery.bindValue(":year", date.year());
+            weeklyQuery.bindValue(":week", date.weekNumber());
+            weeklyQuery.bindValue(":app", target);
+            if (weeklyQuery.exec() && weeklyQuery.next()) {
+                int weeklyTotal = weeklyQuery.value(0).toInt();
+                return weeklyTotal >= limit;
+            }
+        }
+    }
+    return false;
 }
 
 void DatabaseManager::logAppUsage(const QString &appName, int durationSeconds)

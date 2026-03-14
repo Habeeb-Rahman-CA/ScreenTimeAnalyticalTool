@@ -13,6 +13,7 @@ UsageTracker::UsageTracker(DatabaseManager* db, QObject *parent)
     , m_idleThreshold(60000) // 60 seconds
     , m_dbManager(db)
     , m_currentAppDuration(0)
+    , m_sessionDuration(0)
 {
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &UsageTracker::updateTracking);
@@ -84,6 +85,7 @@ void UsageTracker::updateTracking()
     if (currentlyIdle) {
         currentApp = "Idle";
         currentTitle = "";
+        m_sessionDuration = 0; // Reset session on idle
     }
 
     if (currentApp != m_activeApp) {
@@ -103,6 +105,7 @@ void UsageTracker::updateTracking()
     if (!currentlyIdle) {
         m_totalScreenTime++;
         m_currentAppDuration++;
+        m_sessionDuration++;
         
         if (m_currentAppDuration >= 60 && m_dbManager) {
             m_dbManager->logAppUsage(m_activeApp, m_currentAppDuration);
@@ -112,7 +115,47 @@ void UsageTracker::updateTracking()
         emit totalScreenTimeChanged();
         
         m_appUsage[m_activeApp]++;
-        emit appUsageChanged(); // Potentially heavy if many apps, but acceptable for MVP
+        emit appUsageChanged();
+
+        // Phase 4: Limit Checking
+        if (m_dbManager) {
+            // 0. Break Reminder (Total continuous session)
+            if (m_dbManager->checkLimit("Break", m_sessionDuration, "Session")) {
+                emit limitReached("<b>Time for a break!</b><br>You've been active for 45 minutes straight. Stand up and stretch.", "Break", false);
+            }
+
+            // 1. Check App Daily Limit
+            if (m_dbManager->checkLimit(m_activeApp, m_appUsage[m_activeApp])) {
+                emit limitReached("<b>Daily Limit Reached</b><br>You've used " + m_activeApp + " for its allotted time today.", "Daily", false);
+            }
+
+            // 1b. Check App Weekly Limit
+            if (m_dbManager->checkLimit(m_activeApp, 0, "Weekly")) {
+                emit limitReached("<b>Weekly Limit Reached</b><br>" + m_activeApp + " has exceeded its weekly quota.", "Weekly", false);
+            }
+
+            // 2. Check Session Limit (Current continuous usage)
+            if (m_dbManager->checkLimit(m_activeApp, m_currentAppDuration, "Session")) {
+                emit limitReached("<b>Session Limit Reached</b><br>Focus session for " + m_activeApp + " has ended.", "Session", false);
+            }
+
+            // 3. Website Limits
+            bool isBrowser = m_activeApp.toLower().contains("chrome") || 
+                            m_activeApp.toLower().contains("edge") || 
+                            m_activeApp.toLower().contains("firefox") || 
+                            m_activeApp.toLower().contains("browser");
+            
+            if (isBrowser && !m_activeTitle.isEmpty()) {
+                QString site = m_activeTitle;
+                if (site.contains(" - ")) site = site.split(" - ").at(0);
+                else if (site.contains(" — ")) site = site.split(" — ").at(0);
+                site = site.trimmed();
+
+                if (m_dbManager->checkLimit(site, m_appUsage[site], "Daily")) {
+                    emit limitReached("<b>Website Limit</b><br>" + site + " usage has reached your daily limit.", "Daily", true);
+                }
+            }
+        }
     }
 }
 

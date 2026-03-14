@@ -35,6 +35,7 @@ signals:
     void totalScreenTimeChanged();
     void appUsageChanged();
     void isUserIdleChanged();
+    void limitReached(const QString &target, const QString &type, bool isWebsite);
 
 private slots:
     void updateTracking();
@@ -51,6 +52,7 @@ private:
     
     DatabaseManager* m_dbManager;
     int m_currentAppDuration;
+    int m_sessionDuration; // continuous active time across all apps
 
     QString getActiveProcessName();
     QString getActiveWindowTitle();

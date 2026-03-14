@@ -25,6 +25,12 @@ public:
     Q_INVOKABLE QVariantList getUiTopApps(const QString &filter, int limit = 5);
     Q_INVOKABLE QVariantList getUiTrends(const QString &filter);
 
+    // Phase 4: Limits
+    Q_INVOKABLE void setAppLimit(const QString &target, int limitSeconds, const QString &limitType = "Daily", bool isWebsite = false);
+    Q_INVOKABLE void removeAppLimit(const QString &target);
+    Q_INVOKABLE QVariantList getAppLimits();
+    Q_INVOKABLE bool checkLimit(const QString &target, int currentUsageSeconds, const QString &limitType = "Daily");
+
 private:
     QSqlDatabase m_db;
     void createTables();
