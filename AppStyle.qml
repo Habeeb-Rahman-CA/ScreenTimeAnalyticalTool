@@ -5,28 +5,28 @@ pragma Singleton
 QtObject {
     Component.onCompleted: console.log("Style singleton initialized")
     // Primary Colors
-    readonly property color backgroundColor: "#0F0F12"
-    readonly property color surfaceColor: "#1A1A1E"
-    readonly property color glassColor: "#0DFFFFFF" // opaque white at 5%
-    readonly property color glassBorder: "#1AFFFFFF" // opaque white at 10%
-    
-    // Accents
-    readonly property color accentPurple: "#8A2BE2"
-    readonly property color accentBlue: "#00CED1"
-    readonly property color accentGradientStart: "#6366F1"
-    readonly property color accentGradientEnd: "#A855F7"
+    readonly property color backgroundColor: "#080808"
+    readonly property color surfaceColor: "#141414"
+    readonly property color cardColor: "#141414"
+    readonly property color cardBorder: "#1AFFFFFF"
+
+    // Accents (inspired by Prodly)
+    readonly property color accentLime: "#B1F24B"
+    readonly property color accentOrange: "#FF9F46"
+    readonly property color accentGreen: "#4ADE80"
+    readonly property color accentYellow: "#FACC15"
     
     // Text
     readonly property color textPrimary: "#FFFFFF"
-    readonly property color textSecondary: "#A0A0A0"
-    readonly property color textDim: "#606060"
+    readonly property color textSecondary: "#8A8A8A"
+    readonly property color textDim: "#444444"
     
     // Dimensions
-    readonly property int sidebarWidth: 240
-    readonly property int cardRadius: 16
+    readonly property int sidebarWidth: 220
+    readonly property int cardRadius: 24
     readonly property int paddingMedium: 16
-    readonly property int paddingLarge: 24
+    readonly property int paddingLarge: 32
     
     // Fonts
-    readonly property string mainFont: "Inter" // Fallback to system
+    readonly property string mainFont: "Segoe UI"
 }

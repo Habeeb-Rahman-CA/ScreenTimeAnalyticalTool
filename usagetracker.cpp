@@ -9,6 +9,8 @@ UsageTracker::UsageTracker(QObject *parent)
     , m_activeApp("None")
     , m_activeTitle("")
     , m_totalScreenTime(0)
+    , m_isUserIdle(false)
+    , m_idleThreshold(60000) // 60 seconds
 {
     m_timer = new QTimer(this);
     connect(m_timer, &QTimer::timeout, this, &UsageTracker::updateTracking);
@@ -30,10 +32,52 @@ long long UsageTracker::totalScreenTime() const
     return m_totalScreenTime;
 }
 
+QVariantMap UsageTracker::appUsage() const
+{
+    QVariantMap map;
+    for (auto it = m_appUsage.begin(); it != m_appUsage.end(); ++it) {
+        map.insert(it.key(), QVariant::fromValue(it.value()));
+    }
+    return map;
+}
+
+bool UsageTracker::isUserIdle() const
+{
+    return m_isUserIdle;
+}
+
 void UsageTracker::updateTracking()
 {
+    // Check for idle time
+    LASTINPUTINFO lii;
+    lii.cbSize = sizeof(LASTINPUTINFO);
+    bool currentlyIdle = false;
+    
+    if (GetLastInputInfo(&lii)) {
+        DWORD currentTick = GetTickCount();
+        DWORD idleMs = currentTick - lii.dwTime;
+        if (idleMs >= m_idleThreshold) {
+            currentlyIdle = true;
+        }
+    }
+
+    if (currentlyIdle != m_isUserIdle) {
+        m_isUserIdle = currentlyIdle;
+        emit isUserIdleChanged();
+    }
+
     QString currentApp = getActiveProcessName();
     QString currentTitle = getActiveWindowTitle();
+
+    // System sleep / Lock Screen can also be mapped to LogonUI.exe or LockApp.exe
+    if (currentApp == "LogonUI.exe" || currentApp == "LockApp.exe") {
+        currentlyIdle = true; // explicitly treat lock screen as idle
+    }
+
+    if (currentlyIdle) {
+        currentApp = "Idle";
+        currentTitle = "";
+    }
 
     if (currentApp != m_activeApp) {
         m_activeApp = currentApp;
@@ -45,9 +89,13 @@ void UsageTracker::updateTracking()
         emit activeTitleChanged();
     }
 
-    // Increment total screen time (simple logic for now)
-    m_totalScreenTime++;
-    emit totalScreenTimeChanged();
+    if (!currentlyIdle) {
+        m_totalScreenTime++;
+        emit totalScreenTimeChanged();
+        
+        m_appUsage[m_activeApp]++;
+        emit appUsageChanged(); // Potentially heavy if many apps, but acceptable for MVP
+    }
 }
 
 QString UsageTracker::getActiveProcessName()

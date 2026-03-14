@@ -20,6 +20,13 @@ qt_add_qml_module(appScreenTimeAnalyticalTool
     QML_FILES
         Main.qml
         AppStyle.qml
+    RESOURCES
+        ic_dashboard.svg
+        ic_apps.svg
+        ic_time.svg
+        ic_history.svg
+        ic_settings.svg
+        ic_target.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
