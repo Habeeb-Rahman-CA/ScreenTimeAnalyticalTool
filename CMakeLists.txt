@@ -9,28 +9,36 @@ find_package(Qt6 REQUIRED COMPONENTS Quick QuickEffects Sql Charts Widgets)
 qt_standard_project_setup(REQUIRES 6.8)
 
 qt_add_executable(appScreenTimeAnalyticalTool
-    main.cpp
-    usagetracker.h usagetracker.cpp
-    databasemanager.h databasemanager.cpp
+    src/main.cpp
+    src/core/usagetracker.h src/core/usagetracker.cpp
+    src/core/databasemanager.h src/core/databasemanager.cpp
 )
 
-set_source_files_properties(AppStyle.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
+set_source_files_properties(src/ui/Main.qml PROPERTIES 
+    QT_QML_SINGLETON_TYPE FALSE
+    QT_RESOURCE_ALIAS "Main.qml"
+)
+set_source_files_properties(src/ui/AppStyle.qml PROPERTIES 
+    QT_QML_SINGLETON_TYPE TRUE
+    QT_RESOURCE_ALIAS "AppStyle.qml"
+)
 
 qt_add_qml_module(appScreenTimeAnalyticalTool
     URI ScreenTimeAnalyticalTool
+    VERSION 1.0
     QML_FILES
-        Main.qml
-        AppStyle.qml
+        src/ui/Main.qml
+        src/ui/AppStyle.qml
     RESOURCES
-        ic_dashboard.svg
-        ic_apps.svg
-        ic_time.svg
-        ic_history.svg
-        ic_settings.svg
-        ic_target.svg
-        ic_search.svg
-        ic_bell.svg
-        ic_user.svg
+        resources/icons/ic_dashboard.svg
+        resources/icons/ic_apps.svg
+        resources/icons/ic_time.svg
+        resources/icons/ic_history.svg
+        resources/icons/ic_settings.svg
+        resources/icons/ic_target.svg
+        resources/icons/ic_search.svg
+        resources/icons/ic_bell.svg
+        resources/icons/ic_user.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

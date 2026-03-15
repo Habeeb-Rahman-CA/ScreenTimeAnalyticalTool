@@ -1,8 +1,8 @@
 #include <QApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
-#include "databasemanager.h"
-#include "usagetracker.h"
+#include "core/databasemanager.h"
+#include "core/usagetracker.h"
 
 int main(int argc, char *argv[])
 {

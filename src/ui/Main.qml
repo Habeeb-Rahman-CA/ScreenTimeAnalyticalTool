@@ -118,7 +118,7 @@ Window {
                     NavItem {
                         navText: "Dashboard"
                         active: root.currentView === "Dashboard"
-                        navIcon: "ic_dashboard.svg"
+                        navIcon: "resources/icons/ic_dashboard.svg"
                         MouseArea {
                             anchors.fill: parent
                             onClicked: root.currentView = "Dashboard"
@@ -127,7 +127,7 @@ Window {
                     NavItem {
                         navText: "App Limits"
                         active: root.currentView === "Limits"
-                        navIcon: "ic_target.svg"
+                        navIcon: "resources/icons/ic_target.svg"
                         MouseArea {
                             anchors.fill: parent
                             onClicked: root.currentView = "Limits"
@@ -136,7 +136,7 @@ Window {
                     NavItem {
                         navText: "Settings"
                         active: root.currentView === "Settings"
-                        navIcon: "ic_settings.svg"
+                        navIcon: "resources/icons/ic_settings.svg"
                         MouseArea {
                             anchors.fill: parent
                             onClicked: root.currentView = "Settings"
@@ -186,7 +186,7 @@ Window {
                                 Layout.fillWidth: true
                                 cardTitle: "Total Screen Time"
                                 cardValue: root.formatTime(usageTracker.totalScreenTime)
-                                cardIcon: "ic_time.svg"
+                                cardIcon: "resources/icons/ic_time.svg"
                                 cardAccent: AppStyle.accentLime
                                 showProgress: true
                                 progressValue: 0.7
@@ -196,7 +196,7 @@ Window {
                                 cardTitle: "Most Used App"
                                 cardValue: topAppsModel.count > 0 ? topAppsModel.get(0).name : "N/A"
                                 cardSubValue: topAppsModel.count > 0 ? root.formatTime(topAppsModel.get(0).time) : "0m"
-                                cardIcon: "ic_apps.svg"
+                                cardIcon: "resources/icons/ic_apps.svg"
                                 cardAccent: AppStyle.accentBlue
                             }
                             StatCard {
@@ -204,7 +204,7 @@ Window {
                                 cardTitle: "Active Now"
                                 cardValue: usageTracker.activeApp !== "Idle" ? usageTracker.activeApp : "Idle"
                                 cardSubValue: usageTracker.activeTitle
-                                cardIcon: "ic_target.svg"
+                                cardIcon: "resources/icons/ic_target.svg"
                                 cardAccent: AppStyle.accentOrange
                             }
                         }
@@ -341,7 +341,7 @@ Window {
                                         width: topAppsList.width
                                         appName: name
                                         appTime: root.formatTime(time)
-                                        appIcon: "ic_apps.svg"
+                                        appIcon: "resources/icons/ic_apps.svg"
                                         rank: index + 1
                                         percentage: usageTracker.totalScreenTime > 0 ? (time / usageTracker.totalScreenTime) * 100 : 0
                                     }
@@ -624,7 +624,7 @@ Window {
         id: usageRoot
         property string appName: ""
         property string appTime: ""
-        property string appIcon: "ic_apps.svg"
+        property string appIcon: "resources/icons/ic_apps.svg"
         property int rank: 1
         property real percentage: 0.0
         width: parent.width
